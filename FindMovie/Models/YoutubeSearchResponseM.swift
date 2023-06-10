@@ -1,6 +1,6 @@
 import Foundation
 
-struct YoutubeSearchResponse: Codable {
+struct YoutubeSearchResponseM: Codable {
     let items: [VideoElement]
 }
 

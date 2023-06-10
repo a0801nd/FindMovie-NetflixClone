@@ -10,7 +10,7 @@ class CollectionTableViewCell: UITableViewCell {
     
     static let identifier = "CollectionTableViewCell"
     
-    private var titles: [Title] = [Title]()
+    private var titles: [TitleM] = [TitleM]()
     
     private let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -38,7 +38,7 @@ class CollectionTableViewCell: UITableViewCell {
         collectionView.frame = contentView.bounds
     }
     
-    public func configure(with titles: [Title]) {
+    public func configure(with titles: [TitleM]) {
         self.titles = titles
         DispatchQueue.main.async { [weak self] in
             self?.collectionView.reloadData()
@@ -46,8 +46,16 @@ class CollectionTableViewCell: UITableViewCell {
     }
     
     private func downloadTitleAt(_ indexPath: IndexPath) {
-        let title = titles[indexPath.row].original_title ?? "Unknown title"
-        print("Downloading \(title)")
+        
+        let titles = titles[indexPath.row]
+        DataPersistanceManager.shared.downloadTitleWith(model: titles) { result in
+            switch result {
+            case .success():
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "Downloaded"), object: nil)
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }
     }
 }
 // MARK: - Extension
@@ -100,4 +108,5 @@ extension CollectionTableViewCell: UICollectionViewDelegate, UICollectionViewDat
             }
         return config
     }
+    
 }
